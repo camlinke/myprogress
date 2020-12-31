@@ -1,0 +1,36 @@
+<!doctype html>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MyProgress</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+
+</head>
+<body class="d-flex flex-column h-100">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.min.js"></script> 
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <div class="container">
+        {% for d in data %}
+            {# {{d['name']}} #}
+            {# {{loop.index}} #}
+            <canvas id="myChart{{loop.index}}">
+            </canvas>
+            <script type="text/javascript">
+                var counter = {{ loop.index }};
+                var data = {{ d|tojson|safe }};
+                console.log(data);
+                getChart(counter, data);
+            </script>
+        {% endfor %}
+        {# <canvas id="myChart"> #}
+        {# </canvas> #}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+</body>
+</html>
