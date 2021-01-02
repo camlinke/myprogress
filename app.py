@@ -56,7 +56,7 @@ def create_data(list_id):
     cards = get_cards(list_id)
     dates = []
     for card in cards:
-        dt = get_card_actions(card["id"])[-1]["date"]
+        dt = get_card_actions(card["id"])[0]["date"]
         dates.append(datetime.datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S.%f%z").timetuple().tm_yday)
     
     a = [0 for i in range(366)]
