@@ -50,13 +50,17 @@ def get_cards(list_id):
        headers=headers,
        params=query
     )
+    # print(response.text)
     return json.loads(response.text)
 
 def create_data(list_id):
     cards = get_cards(list_id)
     dates = []
     for card in cards:
-        dt = get_card_actions(card["id"])[0]["date"]
+        # print(card)
+        # break
+        dt = card["dateLastActivity"]
+        # dt = get_card_actions(card["id"])[0]["date"]
         dates.append(datetime.datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S.%f%z").timetuple().tm_yday)
     
     a = [0 for i in range(366)]
@@ -69,8 +73,8 @@ def get_data():
     data = []
 
     # Books
-    books36 = [(36/365) * x for x in range(1, 366)]
-    books52 = [(52/365) * x for x in range(1, 366)]
+    books36 = [(12/365) * x for x in range(1, 366)]
+    books52 = [(24/365) * x for x in range(1, 366)]
     list_id = "5fea6044ad7f3a3ee01bb25c"
     read = create_data(list_id)
     data.append({
@@ -89,7 +93,7 @@ def get_data():
     })
 
     # Papers
-    papers = [(100/365) * x for x in range(1, 366)]
+    papers = [(52/365) * x for x in range(1, 366)]
     list_id = "5fea603a0dc7f319c792a863"
     # list_id = "5be8de6f0a9807490540e6f2" # for testing
     read = create_data(list_id)
@@ -105,7 +109,7 @@ def get_data():
     })
 
     # 72 Audiobooks
-    audiobooks = [(72/365) * x for x in range(1, 366)]
+    audiobooks = [(52/365) * x for x in range(1, 366)]
     list_id = "5feb639db0229c3a76f7c0de"
     read = create_data(list_id)
     data.append({
@@ -174,6 +178,8 @@ def check_for_changes(previous_data):
            params=query
         )
 
+        print(response.text)
+
         data = json.loads(response.text)
 
         if sum(l["datasets"][0]["data"]) != len(data):
@@ -190,17 +196,19 @@ def check_for_changes(previous_data):
 
 @app.route('/')
 def home():
-    refresh = False
-    try:
-        data = pickle.load(open("data.p", "rb"))
-        refresh = check_for_changes(data)
-    except (OSError, IOError) as e:
-        data = get_data()
-        pickle.dump(data, open("data.p", "wb"))
+    data = get_data()
+    # refresh = False
+    # try:
+    #     data = pickle.load(open("data.p", "rb"))
+    #     refresh = check_for_changes(data)
+    # except (OSError, IOError) as e:
+    #     data = get_data()
+    #     pickle.dump(data, open("data.p", "wb"))
 
-    if refresh:
-        data = get_data()
-        pickle.dump(data, open("data.p", "wb"))
+    # if refresh:
+    #     data = get_data()
+    #     pickle.dump(data, open("data.p", "wb"))
+
 
     return render_template('index.html', data=data)#json.dumps([[1,2], [3,4]]))
 

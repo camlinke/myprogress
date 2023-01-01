@@ -1,5 +1,7 @@
 # My Extras
 test.py
+keys.py
+keys.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
