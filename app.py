@@ -83,10 +83,10 @@ def get_data():
         "datasets": [
             {"label": "Read",
              "data": read},
-            {"label": "36 Books",
+            {"label": "12 Books",
              "data": books36},
              {
-             "label": "52 Books",
+             "label": "24 Books",
              "data": books52,
              }
         ]
@@ -98,12 +98,12 @@ def get_data():
     # list_id = "5be8de6f0a9807490540e6f2" # for testing
     read = create_data(list_id)
     data.append({
-        "name": "100 Papers",
+        "name": "52 Papers",
         "id": list_id,
         "datasets": [
             {"label": "Read",
              "data": read},
-            {"label": "100 Papers",
+            {"label": "52 Papers",
              "data": papers},
         ]
     })
@@ -118,7 +118,7 @@ def get_data():
         "datasets": [
             {"label": "Read",
              "data": read},
-            {"label": "72 Audio Books",
+            {"label": "52 Audio Books",
              "data": audiobooks},
         ]
     })
@@ -138,7 +138,7 @@ def get_data():
         ]
     })
 
-    # 6 Textbooks
+    # 3 Textbooks
     textbooks = [(6/365) * x for x in range(1, 366)]
     list_id = "5fea6042d07ce105efef7b0d"
     read = create_data(list_id)
