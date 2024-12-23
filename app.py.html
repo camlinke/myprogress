@@ -1,0 +1,388 @@
+<html><head>
+<title>app.py</title>
+<meta name="Generator" content="htmlizer/[Twisted, version 22.2.0]" />
+<link rel="alternate" href="app.py" type="text/x-python" />
+
+</head>
+<body>
+<pre><span class="py-src-variable">from</span> <span class="py-src-variable">flask</span> <span class="py-src-variable">import</span> <span class="py-src-variable">Flask</span>
+<span class="py-src-variable">from</span> <span class="py-src-variable">flask</span> <span class="py-src-variable">import</span> <span class="py-src-variable">render_template</span>
+<span class="py-src-variable">import</span> <span class="py-src-variable">json</span>
+<span class="py-src-variable">import</span> <span class="py-src-variable">pickle</span>
+<span class="py-src-variable">import</span> <span class="py-src-variable">requests</span>
+<span class="py-src-variable">import</span> <span class="py-src-variable">datetime</span>
+<span class="py-src-variable">import</span> <span class="py-src-variable">os</span>
+
+<span class="py-src-variable">app</span> = <span class="py-src-variable">Flask</span>(<span class="py-src-variable">__name__</span>)
+
+<span class="py-src-variable">key</span> = <span class="py-src-variable">os</span>.<span class="py-src-variable">environ</span>[<span class="py-src-string">&quot;TRELLO_KEY&quot;</span>]
+<span class="py-src-variable">token</span> = <span class="py-src-variable">os</span>.<span class="py-src-variable">environ</span>[<span class="py-src-string">&quot;TRELLO_TOKEN&quot;</span>]
+
+<span class="py-src-variable">def</span> <span class="py-src-identifier">get_card_actions</span>(<span class="py-src-parameter">card_id</span>):
+    <span class="py-src-variable">card</span> = <span class="py-src-variable">card_id</span>
+    <span class="py-src-variable">url</span> = <span class="py-src-string">f&quot;https://api.trello.com/1/cards/{card}/actions?filter=all&quot;</span>
+
+    <span class="py-src-variable">headers</span> = {
+       <span class="py-src-string">&quot;Accept&quot;</span>: <span class="py-src-string">&quot;application/json&quot;</span>
+    }
+
+    <span class="py-src-variable">query</span> = {
+       <span class="py-src-string">&#x27;key&#x27;</span>: <span class="py-src-variable">key</span>,
+       <span class="py-src-string">&#x27;token&#x27;</span>: <span class="py-src-variable">token</span>,
+    }
+
+    <span class="py-src-variable">response</span> = <span class="py-src-variable">requests</span>.<span class="py-src-variable">request</span>(
+       <span class="py-src-string">&quot;GET&quot;</span>,
+       <span class="py-src-variable">url</span>,
+       <span class="py-src-variable">headers</span>=<span class="py-src-variable">headers</span>,
+       <span class="py-src-variable">params</span>=<span class="py-src-variable">query</span>
+    )
+    <span class="py-src-variable">return</span> <span class="py-src-variable">json</span>.<span class="py-src-variable">loads</span>(<span class="py-src-variable">response</span>.<span class="py-src-variable">text</span>)
+
+<span class="py-src-variable">def</span> <span class="py-src-identifier">get_cards</span>(<span class="py-src-parameter">list_id</span>):
+    <span class="py-src-variable">url</span> = <span class="py-src-string">f&quot;https://api.trello.com/1/lists/{list_id}/cards&quot;</span>
+
+    <span class="py-src-variable">headers</span> = {
+       <span class="py-src-string">&quot;Accept&quot;</span>: <span class="py-src-string">&quot;application/json&quot;</span>
+    }
+
+    <span class="py-src-variable">query</span> = {
+       <span class="py-src-string">&#x27;key&#x27;</span>: <span class="py-src-variable">key</span>,
+       <span class="py-src-string">&#x27;token&#x27;</span>: <span class="py-src-variable">token</span>,
+    }
+
+    <span class="py-src-variable">response</span> = <span class="py-src-variable">requests</span>.<span class="py-src-variable">request</span>(
+       <span class="py-src-string">&quot;GET&quot;</span>,
+       <span class="py-src-variable">url</span>,
+       <span class="py-src-variable">headers</span>=<span class="py-src-variable">headers</span>,
+       <span class="py-src-variable">params</span>=<span class="py-src-variable">query</span>
+    )
+    <span class="py-src-comment"># print(response.text)</span>
+    <span class="py-src-variable">return</span> <span class="py-src-variable">json</span>.<span class="py-src-variable">loads</span>(<span class="py-src-variable">response</span>.<span class="py-src-variable">text</span>)
+
+<span class="py-src-variable">def</span> <span class="py-src-identifier">create_data</span>(<span class="py-src-parameter">list_id</span>):
+    <span class="py-src-variable">cards</span> = <span class="py-src-variable">get_cards</span>(<span class="py-src-variable">list_id</span>)
+    <span class="py-src-variable">dates</span> = []
+    <span class="py-src-variable">for</span> <span class="py-src-variable">card</span> <span class="py-src-variable">in</span> <span class="py-src-variable">cards</span>:
+        <span class="py-src-comment"># print(card)</span>
+        <span class="py-src-comment"># break</span>
+        <span class="py-src-variable">dt</span> = <span class="py-src-variable">card</span>[<span class="py-src-string">&quot;dateLastActivity&quot;</span>]
+        <span class="py-src-comment"># dt = get_card_actions(card[&quot;id&quot;])[0][&quot;date&quot;]</span>
+        <span class="py-src-variable">dates</span>.<span class="py-src-variable">append</span>(<span class="py-src-variable">datetime</span>.<span class="py-src-variable">datetime</span>.<span class="py-src-variable">strptime</span>(<span class="py-src-variable">dt</span>, <span class="py-src-string">&quot;%Y-%m-%dT%H:%M:%S.%f%z&quot;</span>).<span class="py-src-variable">timetuple</span>().<span class="py-src-variable">tm_yday</span>)
+    
+    <span class="py-src-variable">a</span> = [<span class="py-src-number">0</span> <span class="py-src-variable">for</span> <span class="py-src-variable">i</span> <span class="py-src-variable">in</span> <span class="py-src-variable">range</span>(<span class="py-src-number">366</span>)]
+    <span class="py-src-variable">for</span> <span class="py-src-variable">i</span> <span class="py-src-variable">in</span> <span class="py-src-variable">dates</span>:
+        <span class="py-src-variable">a</span>[<span class="py-src-variable">i</span>] += <span class="py-src-number">1</span>
+    <span class="py-src-variable">data</span> = [<span class="py-src-variable">sum</span>(<span class="py-src-variable">a</span>[:<span class="py-src-variable">i</span>+<span class="py-src-number">1</span>]) <span class="py-src-variable">for</span> <span class="py-src-variable">i</span> <span class="py-src-variable">in</span> <span class="py-src-variable">range</span>(<span class="py-src-number">366</span>)]
+    <span class="py-src-variable">return</span> <span class="py-src-variable">data</span>
+
+<span class="py-src-variable">def</span> <span class="py-src-identifier">get_d</span>(<span class="py-src-parameter">d</span>):
+    <span class="py-src-variable">data</span> = []
+    <span class="py-src-variable">charts</span> = <span class="py-src-variable">d</span>[<span class="py-src-string">&quot;charts&quot;</span>]
+    <span class="py-src-variable">for</span> <span class="py-src-variable">chart</span> <span class="py-src-variable">in</span> <span class="py-src-variable">charts</span>:
+        <span class="py-src-comment"># Books</span>
+        <span class="py-src-variable">target</span> = [(<span class="py-src-variable">chart</span>[<span class="py-src-string">&quot;target&quot;</span>]/<span class="py-src-number">365</span>) * <span class="py-src-variable">x</span> <span class="py-src-variable">for</span> <span class="py-src-variable">x</span> <span class="py-src-variable">in</span> <span class="py-src-variable">range</span>(<span class="py-src-number">1</span>, <span class="py-src-number">366</span>)]
+        <span class="py-src-comment"># books52 = [(24/365) * x for x in range(1, 366)]</span>
+        <span class="py-src-variable">list_id</span> = <span class="py-src-variable">chart</span>[<span class="py-src-string">&quot;id&quot;</span>]
+        <span class="py-src-variable">read</span> = <span class="py-src-variable">create_data</span>(<span class="py-src-variable">list_id</span>)
+        <span class="py-src-variable">data</span>.<span class="py-src-variable">append</span>({
+            <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-variable">chart</span>[<span class="py-src-string">&quot;name&quot;</span>],
+            <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-variable">list_id</span>,
+            <span class="py-src-string">&quot;datasets&quot;</span>: [
+                {<span class="py-src-string">&quot;label&quot;</span>: <span class="py-src-string">&quot;Total&quot;</span>,
+                <span class="py-src-string">&quot;data&quot;</span>: <span class="py-src-variable">read</span>},
+                {<span class="py-src-string">&quot;label&quot;</span>: <span class="py-src-variable">chart</span>[<span class="py-src-string">&quot;name&quot;</span>],
+                <span class="py-src-string">&quot;data&quot;</span>: <span class="py-src-variable">target</span>},
+                <span class="py-src-comment">#  {</span>
+                <span class="py-src-comment">#  &quot;label&quot;: &quot;24 Books&quot;,</span>
+                <span class="py-src-comment">#  &quot;data&quot;: books52,</span>
+                <span class="py-src-comment">#  }</span>
+            ]
+        })
+    <span class="py-src-variable">return</span> <span class="py-src-variable">data</span>
+
+<span class="py-src-variable">def</span> <span class="py-src-identifier">get_data</span>():
+    <span class="py-src-variable">data</span> = []
+
+    <span class="py-src-comment"># Books</span>
+    <span class="py-src-variable">books36</span> = [(<span class="py-src-number">12</span>/<span class="py-src-number">365</span>) * <span class="py-src-variable">x</span> <span class="py-src-variable">for</span> <span class="py-src-variable">x</span> <span class="py-src-variable">in</span> <span class="py-src-variable">range</span>(<span class="py-src-number">1</span>, <span class="py-src-number">366</span>)]
+    <span class="py-src-comment"># books52 = [(24/365) * x for x in range(1, 366)]</span>
+    <span class="py-src-variable">list_id</span> = <span class="py-src-string">&quot;5fea6044ad7f3a3ee01bb25c&quot;</span>
+    <span class="py-src-variable">read</span> = <span class="py-src-variable">create_data</span>(<span class="py-src-variable">list_id</span>)
+    <span class="py-src-variable">data</span>.<span class="py-src-variable">append</span>({
+        <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Books&quot;</span>,
+        <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-variable">list_id</span>,
+        <span class="py-src-string">&quot;datasets&quot;</span>: [
+            {<span class="py-src-string">&quot;label&quot;</span>: <span class="py-src-string">&quot;Read&quot;</span>,
+             <span class="py-src-string">&quot;data&quot;</span>: <span class="py-src-variable">read</span>},
+            {<span class="py-src-string">&quot;label&quot;</span>: <span class="py-src-string">&quot;12 Books&quot;</span>,
+             <span class="py-src-string">&quot;data&quot;</span>: <span class="py-src-variable">books36</span>},
+            <span class="py-src-comment">#  {</span>
+            <span class="py-src-comment">#  &quot;label&quot;: &quot;24 Books&quot;,</span>
+            <span class="py-src-comment">#  &quot;data&quot;: books52,</span>
+            <span class="py-src-comment">#  }</span>
+        ]
+    })
+
+    <span class="py-src-comment"># Papers</span>
+    <span class="py-src-variable">papers</span> = [(<span class="py-src-number">52</span>/<span class="py-src-number">365</span>) * <span class="py-src-variable">x</span> <span class="py-src-variable">for</span> <span class="py-src-variable">x</span> <span class="py-src-variable">in</span> <span class="py-src-variable">range</span>(<span class="py-src-number">1</span>, <span class="py-src-number">366</span>)]
+    <span class="py-src-variable">list_id</span> = <span class="py-src-string">&quot;5fea603a0dc7f319c792a863&quot;</span>
+    <span class="py-src-comment"># list_id = &quot;5be8de6f0a9807490540e6f2&quot; # for testing</span>
+    <span class="py-src-variable">read</span> = <span class="py-src-variable">create_data</span>(<span class="py-src-variable">list_id</span>)
+    <span class="py-src-variable">data</span>.<span class="py-src-variable">append</span>({
+        <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;52 Papers&quot;</span>,
+        <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-variable">list_id</span>,
+        <span class="py-src-string">&quot;datasets&quot;</span>: [
+            {<span class="py-src-string">&quot;label&quot;</span>: <span class="py-src-string">&quot;Read&quot;</span>,
+             <span class="py-src-string">&quot;data&quot;</span>: <span class="py-src-variable">read</span>},
+            {<span class="py-src-string">&quot;label&quot;</span>: <span class="py-src-string">&quot;52 Papers&quot;</span>,
+             <span class="py-src-string">&quot;data&quot;</span>: <span class="py-src-variable">papers</span>},
+        ]
+    })
+
+    <span class="py-src-comment"># 72 Audiobooks</span>
+    <span class="py-src-variable">audiobooks</span> = [(<span class="py-src-number">52</span>/<span class="py-src-number">365</span>) * <span class="py-src-variable">x</span> <span class="py-src-variable">for</span> <span class="py-src-variable">x</span> <span class="py-src-variable">in</span> <span class="py-src-variable">range</span>(<span class="py-src-number">1</span>, <span class="py-src-number">366</span>)]
+    <span class="py-src-variable">list_id</span> = <span class="py-src-string">&quot;5feb639db0229c3a76f7c0de&quot;</span>
+    <span class="py-src-variable">read</span> = <span class="py-src-variable">create_data</span>(<span class="py-src-variable">list_id</span>)
+    <span class="py-src-variable">data</span>.<span class="py-src-variable">append</span>({
+        <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Audio Books&quot;</span>,
+        <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-variable">list_id</span>,
+        <span class="py-src-string">&quot;datasets&quot;</span>: [
+            {<span class="py-src-string">&quot;label&quot;</span>: <span class="py-src-string">&quot;Read&quot;</span>,
+             <span class="py-src-string">&quot;data&quot;</span>: <span class="py-src-variable">read</span>},
+            {<span class="py-src-string">&quot;label&quot;</span>: <span class="py-src-string">&quot;52 Audio Books&quot;</span>,
+             <span class="py-src-string">&quot;data&quot;</span>: <span class="py-src-variable">audiobooks</span>},
+        ]
+    })
+
+    <span class="py-src-comment"># Courses</span>
+    <span class="py-src-variable">courses</span> = [(<span class="py-src-number">8</span>/<span class="py-src-number">365</span>) * <span class="py-src-variable">x</span> <span class="py-src-variable">for</span> <span class="py-src-variable">x</span> <span class="py-src-variable">in</span> <span class="py-src-variable">range</span>(<span class="py-src-number">1</span>, <span class="py-src-number">366</span>)]
+    <span class="py-src-variable">list_id</span> = <span class="py-src-string">&quot;5fea603c103d0e777132f2a5&quot;</span>
+    <span class="py-src-variable">read</span> = <span class="py-src-variable">create_data</span>(<span class="py-src-variable">list_id</span>)
+    <span class="py-src-variable">data</span>.<span class="py-src-variable">append</span>({
+        <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Courses&quot;</span>,
+        <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-variable">list_id</span>,
+        <span class="py-src-string">&quot;datasets&quot;</span>: [
+            {<span class="py-src-string">&quot;label&quot;</span>: <span class="py-src-string">&quot;Read&quot;</span>,
+             <span class="py-src-string">&quot;data&quot;</span>: <span class="py-src-variable">read</span>},
+            {<span class="py-src-string">&quot;label&quot;</span>: <span class="py-src-string">&quot;8 Courses&quot;</span>,
+             <span class="py-src-string">&quot;data&quot;</span>: <span class="py-src-variable">courses</span>},
+        ]
+    })
+
+    <span class="py-src-comment"># 3 Textbooks</span>
+    <span class="py-src-variable">textbooks</span> = [(<span class="py-src-number">6</span>/<span class="py-src-number">365</span>) * <span class="py-src-variable">x</span> <span class="py-src-variable">for</span> <span class="py-src-variable">x</span> <span class="py-src-variable">in</span> <span class="py-src-variable">range</span>(<span class="py-src-number">1</span>, <span class="py-src-number">366</span>)]
+    <span class="py-src-variable">list_id</span> = <span class="py-src-string">&quot;5fea6042d07ce105efef7b0d&quot;</span>
+    <span class="py-src-variable">read</span> = <span class="py-src-variable">create_data</span>(<span class="py-src-variable">list_id</span>)
+    <span class="py-src-variable">data</span>.<span class="py-src-variable">append</span>({
+        <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Textbooks&quot;</span>,
+        <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-variable">list_id</span>,
+        <span class="py-src-string">&quot;datasets&quot;</span>: [
+            {<span class="py-src-string">&quot;label&quot;</span>: <span class="py-src-string">&quot;Read&quot;</span>,
+             <span class="py-src-string">&quot;data&quot;</span>: <span class="py-src-variable">read</span>},
+            {<span class="py-src-string">&quot;label&quot;</span>: <span class="py-src-string">&quot;6 Textbooks&quot;</span>,
+             <span class="py-src-string">&quot;data&quot;</span>: <span class="py-src-variable">textbooks</span>},
+        ]
+    })
+
+    <span class="py-src-variable">return</span> <span class="py-src-variable">data</span>
+
+<span class="py-src-variable">def</span> <span class="py-src-identifier">check_for_changes</span>(<span class="py-src-parameter">previous_data</span>):
+    <span class="py-src-variable">refresh</span> = <span class="py-src-variable">False</span>
+
+    <span class="py-src-variable">for</span> <span class="py-src-variable">l</span> <span class="py-src-variable">in</span> <span class="py-src-variable">previous_data</span>:
+        <span class="py-src-variable">list_id</span> = <span class="py-src-variable">l</span>[<span class="py-src-string">&quot;id&quot;</span>]
+        <span class="py-src-variable">url</span> = <span class="py-src-string">f&quot;https://api.trello.com/1/lists/{list_id}/cards&quot;</span>
+
+        <span class="py-src-variable">headers</span> = {
+           <span class="py-src-string">&quot;Accept&quot;</span>: <span class="py-src-string">&quot;application/json&quot;</span>
+        }
+
+        <span class="py-src-variable">query</span> = {
+           <span class="py-src-string">&#x27;key&#x27;</span>: <span class="py-src-variable">key</span>,
+           <span class="py-src-string">&#x27;token&#x27;</span>: <span class="py-src-variable">token</span>,
+        }
+
+        <span class="py-src-variable">response</span> = <span class="py-src-variable">requests</span>.<span class="py-src-variable">request</span>(
+           <span class="py-src-string">&quot;GET&quot;</span>,
+           <span class="py-src-variable">url</span>,
+           <span class="py-src-variable">headers</span>=<span class="py-src-variable">headers</span>,
+           <span class="py-src-variable">params</span>=<span class="py-src-variable">query</span>
+        )
+
+        <span class="py-src-variable">print</span>(<span class="py-src-variable">response</span>.<span class="py-src-variable">text</span>)
+
+        <span class="py-src-variable">data</span> = <span class="py-src-variable">json</span>.<span class="py-src-variable">loads</span>(<span class="py-src-variable">response</span>.<span class="py-src-variable">text</span>)
+
+        <span class="py-src-variable">if</span> <span class="py-src-variable">sum</span>(<span class="py-src-variable">l</span>[<span class="py-src-string">&quot;datasets&quot;</span>][<span class="py-src-number">0</span>][<span class="py-src-string">&quot;data&quot;</span>]) != <span class="py-src-variable">len</span>(<span class="py-src-variable">data</span>):
+            <span class="py-src-variable">refresh</span> = <span class="py-src-variable">True</span>
+            <span class="py-src-variable">break</span>
+
+        <span class="py-src-comment"># for i, d in enumerate(previous_data):</span>
+        <span class="py-src-comment">#     if len(data[i][&quot;datasets&quot;][0]) != len(d[&quot;datasets&quot;][0]):</span>
+        <span class="py-src-comment">#         refresh = True</span>
+
+    <span class="py-src-variable">return</span> <span class="py-src-variable">refresh</span>
+
+
+
+<span class="py-src-comment"># @app.route(&#x27;/&#x27;)</span>
+<span class="py-src-comment"># def home():</span>
+<span class="py-src-comment">#     data = get_data()</span>
+<span class="py-src-comment">#     # refresh = False</span>
+<span class="py-src-comment">#     # try:</span>
+<span class="py-src-comment">#     #     data = pickle.load(open(&quot;data.p&quot;, &quot;rb&quot;))</span>
+<span class="py-src-comment">#     #     refresh = check_for_changes(data)</span>
+<span class="py-src-comment">#     # except (OSError, IOError) as e:</span>
+<span class="py-src-comment">#     #     data = get_data()</span>
+<span class="py-src-comment">#     #     pickle.dump(data, open(&quot;data.p&quot;, &quot;wb&quot;))</span>
+
+<span class="py-src-comment">#     # if refresh:</span>
+<span class="py-src-comment">#     #     data = get_data()</span>
+<span class="py-src-comment">#     #     pickle.dump(data, open(&quot;data.p&quot;, &quot;wb&quot;))</span>
+
+
+<span class="py-src-comment">#     return render_template(&#x27;index.html&#x27;, data=data)#json.dumps([[1,2], [3,4]]))</span>
+
+@<span class="py-src-variable">app</span>.<span class="py-src-variable">route</span>(<span class="py-src-string">&#x27;/2021&#x27;</span>)
+<span class="py-src-variable">def</span> <span class="py-src-identifier">twentyone</span>():
+    <span class="py-src-variable">d</span> = {
+        <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;&quot;</span>,
+        <span class="py-src-string">&quot;charts&quot;</span>: [
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Books&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;5fea6044ad7f3a3ee01bb25c&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">12</span>,
+            },
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Papers&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;5fea603a0dc7f319c792a863&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">52</span>,
+            },
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Audiobooks&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;5feb639db0229c3a76f7c0de&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">52</span>,
+            },
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Courses&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;5fea603c103d0e777132f2a5&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">12</span>,
+            },
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Textbooks&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;5fea6042d07ce105efef7b0d&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">4</span>,
+            },
+
+        ],
+    }
+    <span class="py-src-variable">data</span> = <span class="py-src-variable">get_d</span>(<span class="py-src-variable">d</span>)
+    <span class="py-src-variable">return</span> <span class="py-src-variable">render_template</span>(<span class="py-src-string">&#x27;index.html&#x27;</span>, <span class="py-src-variable">data</span>=<span class="py-src-variable">data</span>)<span class="py-src-comment">#json.dumps([[1,2], [3,4]]))</span>
+
+@<span class="py-src-variable">app</span>.<span class="py-src-variable">route</span>(<span class="py-src-string">&#x27;/2023&#x27;</span>)
+<span class="py-src-variable">def</span> <span class="py-src-identifier">twentythree</span>():
+    <span class="py-src-variable">d</span> = {
+        <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;&quot;</span>,
+        <span class="py-src-string">&quot;charts&quot;</span>: [
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Books&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;63a6222dfd8cf601b752b210&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">12</span>,
+            },
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Papers&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;63a6222dfd8cf601b752b20d&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">52</span>,
+            },
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Audiobooks&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;63a6222dfd8cf601b752b212&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">52</span>,
+            },
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Courses&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;63a6222dfd8cf601b752b20e&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">12</span>,
+            },
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Textbooks&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;63a6222dfd8cf601b752b20f&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">4</span>,
+            },
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Technical Books&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;63a6222dfd8cf601b752b211&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">4</span>,
+            },
+            <span class="py-src-comment"># {</span>
+            <span class="py-src-comment">#     &quot;name&quot;: &quot;Talks&quot;,</span>
+            <span class="py-src-comment">#     &quot;id&quot;: &quot;63a72fa7792d3300b3e0eb35&quot;,</span>
+            <span class="py-src-comment">#     &quot;target&quot;: 50,</span>
+            <span class="py-src-comment"># },</span>
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Algorithms&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;63b0dd5400f25e00c27e3879&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">26</span>,
+            },
+
+        ],
+    }
+    <span class="py-src-variable">data</span> = <span class="py-src-variable">get_d</span>(<span class="py-src-variable">d</span>)
+    <span class="py-src-variable">return</span> <span class="py-src-variable">render_template</span>(<span class="py-src-string">&#x27;index.html&#x27;</span>, <span class="py-src-variable">data</span>=<span class="py-src-variable">data</span>)<span class="py-src-comment">#json.dumps([[1,2], [3,4]]))</span>
+
+@<span class="py-src-variable">app</span>.<span class="py-src-variable">route</span>(<span class="py-src-string">&#x27;/&#x27;</span>)
+<span class="py-src-variable">def</span> <span class="py-src-identifier">home</span>():
+    <span class="py-src-variable">d</span> = {
+        <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;&quot;</span>,
+        <span class="py-src-string">&quot;charts&quot;</span>: [
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Books&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;6580d1360485c451ef012c68&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">12</span>,
+            },
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Papers&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;6580d1360485c451ef012c65&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">70</span>,
+            },
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Audiobooks&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;6580d1360485c451ef012c6a&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">52</span>,
+            },
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Courses&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;6580d1360485c451ef012c66&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">10</span>,
+            },
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Textbooks&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;6580d1360485c451ef012c67&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">3</span>,
+            },
+            <span class="py-src-comment"># {</span>
+            <span class="py-src-comment">#     &quot;name&quot;: &quot;Technical Books&quot;,</span>
+            <span class="py-src-comment">#     &quot;id&quot;: &quot;6580d1360485c451ef012c69&quot;,</span>
+            <span class="py-src-comment">#     &quot;target&quot;: 4,</span>
+            <span class="py-src-comment"># },</span>
+            <span class="py-src-comment"># {</span>
+            <span class="py-src-comment">#     &quot;name&quot;: &quot;Talks&quot;,</span>
+            <span class="py-src-comment">#     &quot;id&quot;: &quot;63a72fa7792d3300b3e0eb35&quot;,</span>
+            <span class="py-src-comment">#     &quot;target&quot;: 50,</span>
+            <span class="py-src-comment"># },</span>
+            {
+                <span class="py-src-string">&quot;name&quot;</span>: <span class="py-src-string">&quot;Algorithms/Tutorials&quot;</span>,
+                <span class="py-src-string">&quot;id&quot;</span>: <span class="py-src-string">&quot;6580d1360485c451ef012c6c&quot;</span>,
+                <span class="py-src-string">&quot;target&quot;</span>: <span class="py-src-number">26</span>,
+            },
+
+        ],
+    }
+    <span class="py-src-variable">data</span> = <span class="py-src-variable">get_d</span>(<span class="py-src-variable">d</span>)
+    <span class="py-src-variable">return</span> <span class="py-src-variable">render_template</span>(<span class="py-src-string">&#x27;index.html&#x27;</span>, <span class="py-src-variable">data</span>=<span class="py-src-variable">data</span>)<span class="py-src-comment">#json.dumps([[1,2], [3,4]]))</span>
+
+<span class="py-src-variable">if</span> <span class="py-src-variable">__name__</span> == <span class="py-src-string">&#x27;__main__&#x27;</span>:
+    <span class="py-src-variable">app</span>.<span class="py-src-variable">run</span>(<span class="py-src-variable">debug</span>=<span class="py-src-variable">True</span>)
+</pre>
+</body>

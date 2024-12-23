@@ -69,12 +69,37 @@ def create_data(list_id):
     data = [sum(a[:i+1]) for i in range(366)]
     return data
 
+def get_d(d):
+    data = []
+    charts = d["charts"]
+    for chart in charts:
+        # Books
+        target = [(chart["target"]/365) * x for x in range(1, 366)]
+        # books52 = [(24/365) * x for x in range(1, 366)]
+        list_id = chart["id"]
+        read = create_data(list_id)
+        data.append({
+            "name": chart["name"],
+            "id": list_id,
+            "datasets": [
+                {"label": "Total",
+                "data": read},
+                {"label": chart["name"],
+                "data": target},
+                #  {
+                #  "label": "24 Books",
+                #  "data": books52,
+                #  }
+            ]
+        })
+    return data
+
 def get_data():
     data = []
 
     # Books
     books36 = [(12/365) * x for x in range(1, 366)]
-    books52 = [(24/365) * x for x in range(1, 366)]
+    # books52 = [(24/365) * x for x in range(1, 366)]
     list_id = "5fea6044ad7f3a3ee01bb25c"
     read = create_data(list_id)
     data.append({
@@ -85,10 +110,10 @@ def get_data():
              "data": read},
             {"label": "12 Books",
              "data": books36},
-             {
-             "label": "24 Books",
-             "data": books52,
-             }
+            #  {
+            #  "label": "24 Books",
+            #  "data": books52,
+            #  }
         ]
     })
 
@@ -194,22 +219,211 @@ def check_for_changes(previous_data):
 
 
 
+# @app.route('/')
+# def home():
+#     data = get_data()
+#     # refresh = False
+#     # try:
+#     #     data = pickle.load(open("data.p", "rb"))
+#     #     refresh = check_for_changes(data)
+#     # except (OSError, IOError) as e:
+#     #     data = get_data()
+#     #     pickle.dump(data, open("data.p", "wb"))
+
+#     # if refresh:
+#     #     data = get_data()
+#     #     pickle.dump(data, open("data.p", "wb"))
+
+
+#     return render_template('index.html', data=data)#json.dumps([[1,2], [3,4]]))
+
+@app.route('/2021')
+def twentyone():
+    d = {
+        "id": "",
+        "charts": [
+            {
+                "name": "Books",
+                "id": "5fea6044ad7f3a3ee01bb25c",
+                "target": 12,
+            },
+            {
+                "name": "Papers",
+                "id": "5fea603a0dc7f319c792a863",
+                "target": 52,
+            },
+            {
+                "name": "Audiobooks",
+                "id": "5feb639db0229c3a76f7c0de",
+                "target": 52,
+            },
+            {
+                "name": "Courses",
+                "id": "5fea603c103d0e777132f2a5",
+                "target": 12,
+            },
+            {
+                "name": "Textbooks",
+                "id": "5fea6042d07ce105efef7b0d",
+                "target": 4,
+            },
+
+        ],
+    }
+    data = get_d(d)
+    return render_template('index.html', data=data)#json.dumps([[1,2], [3,4]]))
+
+@app.route('/2023')
+def twentythree():
+    d = {
+        "id": "",
+        "charts": [
+            {
+                "name": "Books",
+                "id": "63a6222dfd8cf601b752b210",
+                "target": 12,
+            },
+            {
+                "name": "Papers",
+                "id": "63a6222dfd8cf601b752b20d",
+                "target": 52,
+            },
+            {
+                "name": "Audiobooks",
+                "id": "63a6222dfd8cf601b752b212",
+                "target": 52,
+            },
+            {
+                "name": "Courses",
+                "id": "63a6222dfd8cf601b752b20e",
+                "target": 12,
+            },
+            {
+                "name": "Textbooks",
+                "id": "63a6222dfd8cf601b752b20f",
+                "target": 4,
+            },
+            {
+                "name": "Technical Books",
+                "id": "63a6222dfd8cf601b752b211",
+                "target": 4,
+            },
+            # {
+            #     "name": "Talks",
+            #     "id": "63a72fa7792d3300b3e0eb35",
+            #     "target": 50,
+            # },
+            {
+                "name": "Algorithms",
+                "id": "63b0dd5400f25e00c27e3879",
+                "target": 26,
+            },
+
+        ],
+    }
+    data = get_d(d)
+    return render_template('index.html', data=data)#json.dumps([[1,2], [3,4]]))
+
+@app.route('/2024')
+def twentyfour():
+    d = {
+        "id": "",
+        "charts": [
+            {
+                "name": "Books",
+                "id": "6580d1360485c451ef012c68",
+                "target": 12,
+            },
+            {
+                "name": "Papers",
+                "id": "6768c05183f146b395a76559",
+                "target": 70,
+            },
+            {
+                "name": "Audiobooks",
+                "id": "6580d1360485c451ef012c6a",
+                "target": 52,
+            },
+            {
+                "name": "Courses",
+                "id": "6580d1360485c451ef012c66",
+                "target": 10,
+            },
+            {
+                "name": "Textbooks",
+                "id": "6580d1360485c451ef012c67",
+                "target": 3,
+            },
+            # {
+            #     "name": "Technical Books",
+            #     "id": "6580d1360485c451ef012c69",
+            #     "target": 4,
+            # },
+            # {
+            #     "name": "Talks",
+            #     "id": "63a72fa7792d3300b3e0eb35",
+            #     "target": 50,
+            # },
+            {
+                "name": "Algorithms/Tutorials",
+                "id": "6580d1360485c451ef012c6c",
+                "target": 26,
+            },
+
+        ],
+    }
+    data = get_d(d)
+    return render_template('index.html', data=data)#json.dumps([[1,2], [3,4]]))
+
 @app.route('/')
 def home():
-    data = get_data()
-    # refresh = False
-    # try:
-    #     data = pickle.load(open("data.p", "rb"))
-    #     refresh = check_for_changes(data)
-    # except (OSError, IOError) as e:
-    #     data = get_data()
-    #     pickle.dump(data, open("data.p", "wb"))
+    d = {
+        "id": "",
+        "charts": [
+            {
+                "name": "Books",
+                "id": "6768c05183f146b395a7655d",
+                "target": 12,
+            },
+            {
+                "name": "Papers",
+                "id": "6768c05183f146b395a7655a",
+                "target": 70,
+            },
+            {
+                "name": "Audiobooks",
+                "id": "6768c05183f146b395a7655f",
+                "target": 52,
+            },
+            {
+                "name": "Courses",
+                "id": "6768c05183f146b395a7655b",
+                "target": 10,
+            },
+            {
+                "name": "Textbooks",
+                "id": "6768c05183f146b395a7655c",
+                "target": 3,
+            },
+            # {
+            #     "name": "Technical Books",
+            #     "id": "6580d1360485c451ef012c69",
+            #     "target": 4,
+            # },
+            # {
+            #     "name": "Talks",
+            #     "id": "63a72fa7792d3300b3e0eb35",
+            #     "target": 50,
+            # },
+            {
+                "name": "Algorithms/Tutorials",
+                "id": "6768c05183f146b395a76561",
+                "target": 26,
+            },
 
-    # if refresh:
-    #     data = get_data()
-    #     pickle.dump(data, open("data.p", "wb"))
-
-
+        ],
+    }
+    data = get_d(d)
     return render_template('index.html', data=data)#json.dumps([[1,2], [3,4]]))
 
 if __name__ == '__main__':
