@@ -375,7 +375,7 @@ def twentyfour():
     data = get_d(d)
     return render_template('index.html', data=data)#json.dumps([[1,2], [3,4]]))
 
-@app.route('/')
+@app.route('/2025')
 def home():
     d = {
         "id": "",
@@ -393,7 +393,7 @@ def home():
             {
                 "name": "Audiobooks",
                 "id": "6768c05183f146b395a7655f",
-                "target": 52,
+                "target": 48,
             },
             {
                 "name": "Courses",
@@ -418,6 +418,57 @@ def home():
             {
                 "name": "Algorithms/Tutorials",
                 "id": "6768c05183f146b395a76561",
+                "target": 26,
+            },
+
+        ],
+    }
+    data = get_d(d)
+    return render_template('index.html', data=data)#json.dumps([[1,2], [3,4]]))
+
+@app.route('/')
+def home():
+    d = {
+        "id": "",
+        "charts": [
+            {
+                "name": "Books",
+                "id": "694b4a8b74675ea759b79ece",
+                "target": 6,
+            },
+            {
+                "name": "Papers",
+                "id": "694b4a8b74675ea759b79ecb",
+                "target": 100,
+            },
+            {
+                "name": "Audiobooks",
+                "id": "694b4a8b74675ea759b79ed0",
+                "target": 36,
+            },
+            {
+                "name": "Courses",
+                "id": "694b4a8b74675ea759b79ecc",
+                "target": 12,
+            },
+            {
+                "name": "Textbooks",
+                "id": "694b4a8b74675ea759b79ecd",
+                "target": 2,
+            },
+            # {
+            #     "name": "Technical Books",
+            #     "id": "6580d1360485c451ef012c69",
+            #     "target": 4,
+            # },
+            # {
+            #     "name": "Talks",
+            #     "id": "63a72fa7792d3300b3e0eb35",
+            #     "target": 50,
+            # },
+            {
+                "name": "Algorithms/Tutorials",
+                "id": "694b4a8b74675ea759b79ed2",
                 "target": 26,
             },
 
