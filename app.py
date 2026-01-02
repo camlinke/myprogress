@@ -376,7 +376,7 @@ def twentyfour():
     return render_template('index.html', data=data)#json.dumps([[1,2], [3,4]]))
 
 @app.route('/2025')
-def home():
+def twentyfive():
     d = {
         "id": "",
         "charts": [
