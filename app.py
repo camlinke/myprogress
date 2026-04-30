@@ -16,6 +16,14 @@ app = Flask(__name__)
 key = os.environ["TRELLO_KEY"]
 token = os.environ["TRELLO_TOKEN"]
 
+@app.context_processor
+def inject_year_context():
+    today = datetime.date.today()
+    return {
+        "today_day": today.timetuple().tm_yday,
+        "current_year": today.year,
+    }
+
 def get_card_actions(card_id):
     card = card_id
     url = f"https://api.trello.com/1/cards/{card}/actions?filter=all"
@@ -298,7 +306,7 @@ def twentyone():
         ],
     }
     data = get_d(d)
-    return render_template('index.html', data=data)#json.dumps([[1,2], [3,4]]))
+    return render_template('index.html', data=data, year=2021)
 
 @app.route('/2023')
 def twentythree():
@@ -349,7 +357,7 @@ def twentythree():
         ],
     }
     data = get_d(d)
-    return render_template('index.html', data=data)#json.dumps([[1,2], [3,4]]))
+    return render_template('index.html', data=data, year=2023)
 
 @app.route('/2024')
 def twentyfour():
@@ -400,7 +408,7 @@ def twentyfour():
         ],
     }
     data = get_d(d)
-    return render_template('index.html', data=data)#json.dumps([[1,2], [3,4]]))
+    return render_template('index.html', data=data, year=2024)
 
 @app.route('/2025')
 def twentyfive():
@@ -451,7 +459,7 @@ def twentyfive():
         ],
     }
     data = get_d(d)
-    return render_template('index.html', data=data)#json.dumps([[1,2], [3,4]]))
+    return render_template('index.html', data=data, year=2025)
 
 @app.route('/')
 def home():
@@ -502,7 +510,7 @@ def home():
         ],
     }
     data = get_d(d)
-    return render_template('index.html', data=data)#json.dumps([[1,2], [3,4]]))
+    return render_template('index.html', data=data, year=2026)
 
 if __name__ == '__main__':
     app.run(debug=True)

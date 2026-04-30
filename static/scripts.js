@@ -2,59 +2,149 @@ function getDay() {
     var now = new Date();
     var start = new Date(now.getFullYear(), 0, 0);
     var diff = (now - start) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
-    var oneDay = 1000 * 60 * 60 * 24;
-    var day = Math.floor(diff / oneDay);
-    return day;
+    return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
+var DATASET_STYLES = [
+    {
+        // actual
+        borderColor: "#6ee7f7",
+        backgroundColor: "rgba(110, 231, 247, 0.10)",
+        borderWidth: 2.5,
+        pointRadius: 0,
+        pointHitRadius: 8,
+        pointHoverRadius: 4,
+        pointHoverBackgroundColor: "#6ee7f7",
+        pointHoverBorderColor: "#0f0f1a",
+        pointHoverBorderWidth: 2,
+        fill: true,
+        lineTension: 0.25
+    },
+    {
+        // target
+        borderColor: "rgba(167, 139, 250, 0.55)",
+        backgroundColor: "transparent",
+        borderWidth: 1.5,
+        borderDash: [4, 4],
+        pointRadius: 0,
+        pointHitRadius: 0,
+        fill: false,
+        lineTension: 0
+    }
+];
+
+var LABELS = (function () {
+    var arr = [];
+    for (var i = 1; i <= 365; i++) arr.push(i);
+    return arr;
+})();
+
 function getChart(index, data) {
-    id = "myChart" + index;
-    var datasets = [];
-    var colors = ["red", "blue", "green", "orange", "yellow"];
-    data["datasets"].forEach(function(item, index) {
-        console.log(item);
-        d = {
-            label: item["label"],
-            borderColor: colors[index],
-            data: item["data"],
+    var id = "myChart" + index;
+    var datasets = data.datasets.map(function (item, i) {
+        var style = DATASET_STYLES[i] || DATASET_STYLES[0];
+        var ds = {
+            label: item.label,
+            data: item.data
         };
-        datasets.push(d);
+        for (var k in style) if (Object.prototype.hasOwnProperty.call(style, k)) ds[k] = style[k];
+        return ds;
     });
+
+    var annotations = [];
+    if (window.IS_CURRENT_YEAR) {
+        annotations.push({
+            drawTime: "afterDatasetsDraw",
+            type: "line",
+            mode: "vertical",
+            scaleID: "x-axis-0",
+            value: getDay(),
+            borderWidth: 1,
+            borderColor: "rgba(249, 168, 212, 0.5)",
+            borderDash: [3, 3],
+            label: {
+                content: "TODAY",
+                enabled: true,
+                position: "top",
+                backgroundColor: "rgba(249, 168, 212, 0.92)",
+                fontColor: "#09090f",
+                fontSize: 9,
+                fontStyle: "bold",
+                xPadding: 6,
+                yPadding: 2,
+                cornerRadius: 4
+            }
+        });
+    }
+
     var ctx = document.getElementById(id).getContext('2d');
-    var chart = new Chart(ctx, {
-        // The type of chart we want to create
+    new Chart(ctx, {
         type: 'line',
-
-        // The data for our dataset
-        data: {
-            labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 365],
-            datasets: datasets,
-        },
-
-        // Configuration options go here
+        data: { labels: LABELS, datasets: datasets },
         options: {
-            title: {
-                display: true,
-                text: data["name"],
-            },
-            annotation: {
-                annotations: [
-                    {
-                        drawTime: "afterDatasetsDraw",
-                        type: "line",
-                        mode: "vertical",
-                        scaleID: "x-axis-0",
-                        value: getDay(),
-                        borderWidth: 2,
-                        borderColor: "black",
-                        label: {
-                            content: "TODAY",
-                            enabled: true,
-                            position: "top"
-                        }
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2,
+            legend: { display: false },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+                backgroundColor: 'rgba(15, 15, 26, 0.96)',
+                titleFontColor: '#e2e8f0',
+                titleFontSize: 11,
+                titleFontStyle: '600',
+                bodyFontColor: '#e2e8f0',
+                bodyFontSize: 11,
+                borderColor: 'rgba(110, 231, 247, 0.2)',
+                borderWidth: 1,
+                cornerRadius: 6,
+                xPadding: 10,
+                yPadding: 8,
+                displayColors: true,
+                callbacks: {
+                    title: function (items) { return 'day ' + items[0].xLabel; },
+                    label: function (item, d) {
+                        var label = d.datasets[item.datasetIndex].label;
+                        var value = item.datasetIndex === 0
+                            ? Math.round(item.yLabel)
+                            : Math.round(item.yLabel * 10) / 10;
+                        return label + ': ' + value;
                     }
-                ]
+                }
             },
+            hover: { mode: 'index', intersect: false },
+            scales: {
+                xAxes: [{
+                    gridLines: {
+                        color: 'rgba(255,255,255,0.04)',
+                        zeroLineColor: 'rgba(255,255,255,0.04)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        fontColor: '#4a5568',
+                        fontSize: 10,
+                        autoSkip: true,
+                        maxTicksLimit: 7,
+                        padding: 4
+                    }
+                }],
+                yAxes: [{
+                    gridLines: {
+                        color: 'rgba(255,255,255,0.04)',
+                        zeroLineColor: 'rgba(255,255,255,0.04)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        fontColor: '#4a5568',
+                        fontSize: 10,
+                        beginAtZero: true,
+                        precision: 0,
+                        padding: 4,
+                        maxTicksLimit: 5
+                    }
+                }]
+            },
+            annotation: { annotations: annotations }
         }
     });
 }

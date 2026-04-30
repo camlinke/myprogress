@@ -1,5 +1,263 @@
-/*.container {
-    width: auto;
-    max-width: 680px;
-    padding: 0 15px;
-}*/
+:root {
+    --bg: #09090f;
+    --card-bg: #0f0f1a;
+    --border: #1a1a2e;
+    --text: #e2e8f0;
+    --muted: #718096;
+    --accent: #6ee7f7;
+    --ahead: #34d399;
+    --behind: #f87171;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(ellipse at 10% 0%, rgba(110, 231, 247, 0.08) 0%, transparent 55%),
+        radial-gradient(ellipse at 90% 100%, rgba(167, 139, 250, 0.08) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 50%, rgba(249, 168, 212, 0.03) 0%, transparent 70%);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ─────────────────────────────────────── */
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2.5rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(9, 9, 15, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.brand {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.logo {
+    font-size: 1.35rem;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    color: var(--text);
+    line-height: 1.1;
+}
+
+.logo span {
+    font-weight: 800;
+    background: linear-gradient(120deg, #6ee7f7, #a78bfa 50%, #f9a8d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.year-meta {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    font-variant-numeric: tabular-nums;
+}
+
+nav {
+    display: flex;
+    gap: 0.2rem;
+}
+
+nav a {
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    transition: background 0.15s, color 0.15s;
+}
+
+nav a:hover {
+    color: var(--text);
+    background: var(--border);
+}
+
+nav a.active {
+    color: var(--text);
+    background: var(--border);
+    font-weight: 700;
+}
+
+/* ── Grid ────────────────────────────────────────── */
+
+main {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    padding: 2rem 2.5rem 3rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ── Category accents ────────────────────────────── */
+
+.chart-card { --card-color: var(--accent); }
+.chart-card[data-category="Books"]                 { --card-color: #60a5fa; }
+.chart-card[data-category="Papers"]                { --card-color: #fbbf24; }
+.chart-card[data-category="Audiobooks"]            { --card-color: #f472b6; }
+.chart-card[data-category="Courses"]               { --card-color: #a78bfa; }
+.chart-card[data-category="Textbooks"]             { --card-color: #34d399; }
+.chart-card[data-category="Technical Books"]       { --card-color: #818cf8; }
+.chart-card[data-category="Algorithms"]            { --card-color: #fb923c; }
+.chart-card[data-category="Algorithms/Tutorials"]  { --card-color: #fb923c; }
+.chart-card[data-category="Talks"]                 { --card-color: #fb7185; }
+
+/* ── Cards ───────────────────────────────────────── */
+
+.chart-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--card-color);
+    border-radius: 14px;
+    padding: 1.3rem 1.5rem 1.1rem;
+    transition: transform 0.2s ease, box-shadow 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: card-in 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    animation-delay: var(--card-delay, 0ms);
+}
+
+.chart-card::before {
+    content: "";
+    position: absolute;
+    inset: -1px -1px auto -1px;
+    height: 60px;
+    background: radial-gradient(ellipse at top, var(--card-color), transparent 70%);
+    opacity: 0.08;
+    pointer-events: none;
+}
+
+@keyframes card-in {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.chart-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 0.55rem;
+    position: relative;
+}
+
+.card-icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.chart-card h2 {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--card-color);
+    flex: 1;
+}
+
+.stat-delta {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.22rem 0.55rem;
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.stat-delta.ahead {
+    color: var(--ahead);
+    background: rgba(52, 211, 153, 0.12);
+}
+
+.stat-delta.behind {
+    color: var(--behind);
+    background: rgba(248, 113, 113, 0.12);
+}
+
+.stat-delta.on-pace {
+    color: var(--muted);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.card-stats {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    margin-bottom: 0.85rem;
+    font-variant-numeric: tabular-nums;
+    position: relative;
+}
+
+.stat-actual {
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1;
+}
+
+.stat-divider, .stat-target {
+    font-size: 1rem;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+.stat-pct {
+    margin-left: auto;
+    font-size: 0.72rem;
+    color: var(--card-color);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    opacity: 0.9;
+}
+
+canvas {
+    width: 100% !important;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+
+@media (max-width: 900px) {
+    main {
+        grid-template-columns: 1fr;
+        padding: 1.25rem 1rem 2rem;
+        gap: 1rem;
+    }
+
+    header {
+        padding: 0.9rem 1.25rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .stat-actual { font-size: 1.55rem; }
+}
