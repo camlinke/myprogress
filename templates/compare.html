@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>my progress · compare</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.min.js"></script>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</head>
+{% set icons = {
+    'Books': '📚',
+    'Papers': '📄',
+    'Audiobooks': '🎧',
+    'Courses': '🎓'
+} %}
+<body>
+    <header>
+        <div class="brand">
+            <a href="/" class="logo">my<span>progress</span></a>
+            <span class="year-meta">compare · {{ available_years|length }} years</span>
+        </div>
+        <nav>
+            <a href="/2021">2021</a>
+            <a href="/2023">2023</a>
+            <a href="/2024">2024</a>
+            <a href="/2025">2025</a>
+            <a href="/">2026</a>
+            <a href="/compare" class="active">compare</a>
+        </nav>
+    </header>
+
+    <div class="compare-toggles">
+        {% for y in available_years %}
+        <label class="year-toggle" data-year="{{ y }}" style="--year-color: {{ year_colors[y] }}">
+            <input type="checkbox" checked data-year="{{ y }}">
+            <span>{{ y }}</span>
+        </label>
+        {% endfor %}
+    </div>
+
+    <main>
+        {% for c in categories %}
+        <div class="chart-card" data-category="{{ c['name'] }}" style="--card-delay: {{ loop.index0 * 60 }}ms">
+            <div class="card-head">
+                <span class="card-icon">{{ icons.get(c['name'], '🎯') }}</span>
+                <h2>{{ c['name'] }}</h2>
+            </div>
+            <canvas id="compareChart{{ loop.index }}"></canvas>
+            <script>getCompareChart({{ loop.index }}, {{ c|tojson|safe }});</script>
+        </div>
+        {% endfor %}
+    </main>
+
+    <script>
+    (function () {
+        document.querySelectorAll('.year-toggle input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                setCompareYearVisible(input.dataset.year, input.checked);
+                input.closest('.year-toggle').classList.toggle('off', !input.checked);
+            });
+        });
+    })();
+    </script>
+</body>
+</html>

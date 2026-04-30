@@ -39,6 +39,137 @@ var LABELS = (function () {
     return arr;
 })();
 
+window.compareCharts = window.compareCharts || [];
+
+function getCompareChart(index, data) {
+    var id = "compareChart" + index;
+    var currentYear = new Date().getFullYear();
+
+    var datasets = data.datasets.map(function (item) {
+        var color = item.color || "#64748b";
+        var isCurrent = Number(item.year) === currentYear;
+        return {
+            label: String(item.year),
+            data: item.data,
+            year: item.year,
+            borderColor: color,
+            backgroundColor: "transparent",
+            borderWidth: isCurrent ? 2.5 : 1.8,
+            pointRadius: 0,
+            pointHitRadius: 8,
+            pointHoverRadius: 4,
+            pointHoverBackgroundColor: color,
+            pointHoverBorderColor: "#ffffff",
+            pointHoverBorderWidth: 2,
+            fill: false,
+            lineTension: 0.25
+        };
+    });
+
+    var ctx = document.getElementById(id).getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: { labels: LABELS, datasets: datasets },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2,
+            legend: { display: false },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+                backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                titleFontColor: '#0f172a',
+                titleFontSize: 11,
+                titleFontStyle: '600',
+                bodyFontColor: '#0f172a',
+                bodyFontSize: 11,
+                borderColor: 'rgba(15, 23, 42, 0.10)',
+                borderWidth: 1,
+                cornerRadius: 6,
+                xPadding: 10,
+                yPadding: 8,
+                callbacks: {
+                    title: function (items) { return 'day ' + items[0].xLabel; },
+                    label: function (item, d) {
+                        return d.datasets[item.datasetIndex].label + ': ' + Math.round(item.yLabel);
+                    }
+                }
+            },
+            hover: { mode: 'index', intersect: false },
+            scales: {
+                xAxes: [{
+                    gridLines: {
+                        color: 'rgba(15, 23, 42, 0.06)',
+                        zeroLineColor: 'rgba(15, 23, 42, 0.06)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        fontColor: '#94a3b8',
+                        fontSize: 10,
+                        autoSkip: true,
+                        maxTicksLimit: 7,
+                        padding: 4
+                    }
+                }],
+                yAxes: [{
+                    gridLines: {
+                        color: 'rgba(15, 23, 42, 0.06)',
+                        zeroLineColor: 'rgba(15, 23, 42, 0.06)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        fontColor: '#94a3b8',
+                        fontSize: 10,
+                        beginAtZero: true,
+                        precision: 0,
+                        padding: 4,
+                        maxTicksLimit: 5
+                    }
+                }]
+            },
+            annotation: {
+                annotations: [{
+                    drawTime: "afterDatasetsDraw",
+                    type: "line",
+                    mode: "vertical",
+                    scaleID: "x-axis-0",
+                    value: getDay(),
+                    borderWidth: 1,
+                    borderColor: "rgba(236, 72, 153, 0.55)",
+                    borderDash: [3, 3],
+                    label: {
+                        content: "TODAY",
+                        enabled: true,
+                        position: "top",
+                        backgroundColor: "rgba(236, 72, 153, 0.95)",
+                        fontColor: "#ffffff",
+                        fontSize: 9,
+                        fontStyle: "bold",
+                        xPadding: 6,
+                        yPadding: 2,
+                        cornerRadius: 4
+                    }
+                }]
+            }
+        }
+    });
+    window.compareCharts.push(chart);
+    return chart;
+}
+
+function setCompareYearVisible(year, visible) {
+    var target = Number(year);
+    (window.compareCharts || []).forEach(function (chart) {
+        chart.data.datasets.forEach(function (ds, i) {
+            if (Number(ds.year) === target) {
+                chart.getDatasetMeta(i).hidden = !visible;
+            }
+        });
+        chart.update();
+    });
+}
+
 function getChart(index, data) {
     var id = "myChart" + index;
     var datasets = data.datasets.map(function (item, i) {
