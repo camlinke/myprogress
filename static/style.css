@@ -1,12 +1,13 @@
 :root {
-    --bg: #09090f;
-    --card-bg: #0f0f1a;
-    --border: #1a1a2e;
-    --text: #e2e8f0;
-    --muted: #718096;
-    --accent: #6ee7f7;
-    --ahead: #34d399;
-    --behind: #f87171;
+    --bg: #f7f7fb;
+    --card-bg: #ffffff;
+    --border: #e7e7ee;
+    --border-strong: #d8d8e2;
+    --text: #0f172a;
+    --muted: #64748b;
+    --accent: #0ea5e9;
+    --ahead: #059669;
+    --behind: #dc2626;
 }
 
 *, *::before, *::after {
@@ -18,9 +19,9 @@
 body {
     background-color: var(--bg);
     background-image:
-        radial-gradient(ellipse at 10% 0%, rgba(110, 231, 247, 0.08) 0%, transparent 55%),
-        radial-gradient(ellipse at 90% 100%, rgba(167, 139, 250, 0.08) 0%, transparent 55%),
-        radial-gradient(ellipse at 50% 50%, rgba(249, 168, 212, 0.03) 0%, transparent 70%);
+        radial-gradient(ellipse at 5% -5%, rgba(14, 165, 233, 0.14) 0%, transparent 55%),
+        radial-gradient(ellipse at 95% 105%, rgba(139, 92, 246, 0.13) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 50%, rgba(236, 72, 153, 0.05) 0%, transparent 70%);
     color: var(--text);
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     min-height: 100vh;
@@ -35,7 +36,7 @@ header {
     justify-content: space-between;
     padding: 1rem 2.5rem;
     border-bottom: 1px solid var(--border);
-    background: rgba(9, 9, 15, 0.85);
+    background: rgba(255, 255, 255, 0.78);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     position: sticky;
@@ -60,7 +61,7 @@ header {
 
 .logo span {
     font-weight: 800;
-    background: linear-gradient(120deg, #6ee7f7, #a78bfa 50%, #f9a8d4);
+    background: linear-gradient(120deg, #0ea5e9, #8b5cf6 50%, #ec4899);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -91,12 +92,12 @@ nav a {
 
 nav a:hover {
     color: var(--text);
-    background: var(--border);
+    background: rgba(15, 23, 42, 0.06);
 }
 
 nav a.active {
     color: var(--text);
-    background: var(--border);
+    background: rgba(15, 23, 42, 0.08);
     font-weight: 700;
 }
 
@@ -114,15 +115,15 @@ main {
 /* ── Category accents ────────────────────────────── */
 
 .chart-card { --card-color: var(--accent); }
-.chart-card[data-category="Books"]                 { --card-color: #60a5fa; }
-.chart-card[data-category="Papers"]                { --card-color: #fbbf24; }
-.chart-card[data-category="Audiobooks"]            { --card-color: #f472b6; }
-.chart-card[data-category="Courses"]               { --card-color: #a78bfa; }
-.chart-card[data-category="Textbooks"]             { --card-color: #34d399; }
-.chart-card[data-category="Technical Books"]       { --card-color: #818cf8; }
-.chart-card[data-category="Algorithms"]            { --card-color: #fb923c; }
-.chart-card[data-category="Algorithms/Tutorials"]  { --card-color: #fb923c; }
-.chart-card[data-category="Talks"]                 { --card-color: #fb7185; }
+.chart-card[data-category="Books"]                 { --card-color: #3b82f6; }
+.chart-card[data-category="Papers"]                { --card-color: #f59e0b; }
+.chart-card[data-category="Audiobooks"]            { --card-color: #ec4899; }
+.chart-card[data-category="Courses"]               { --card-color: #8b5cf6; }
+.chart-card[data-category="Textbooks"]             { --card-color: #10b981; }
+.chart-card[data-category="Technical Books"]       { --card-color: #6366f1; }
+.chart-card[data-category="Algorithms"]            { --card-color: #f97316; }
+.chart-card[data-category="Algorithms/Tutorials"]  { --card-color: #f97316; }
+.chart-card[data-category="Talks"]                 { --card-color: #f43f5e; }
 
 /* ── Cards ───────────────────────────────────────── */
 
@@ -135,6 +136,7 @@ main {
     transition: transform 0.2s ease, box-shadow 0.25s ease;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
     opacity: 0;
     transform: translateY(10px);
     animation: card-in 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
@@ -145,9 +147,9 @@ main {
     content: "";
     position: absolute;
     inset: -1px -1px auto -1px;
-    height: 60px;
+    height: 80px;
     background: radial-gradient(ellipse at top, var(--card-color), transparent 70%);
-    opacity: 0.08;
+    opacity: 0.10;
     pointer-events: none;
 }
 
@@ -157,7 +159,7 @@ main {
 
 .chart-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 14px 36px rgba(15, 23, 42, 0.10);
 }
 
 .card-head {
@@ -195,17 +197,17 @@ main {
 
 .stat-delta.ahead {
     color: var(--ahead);
-    background: rgba(52, 211, 153, 0.12);
+    background: rgba(5, 150, 105, 0.10);
 }
 
 .stat-delta.behind {
     color: var(--behind);
-    background: rgba(248, 113, 113, 0.12);
+    background: rgba(220, 38, 38, 0.10);
 }
 
 .stat-delta.on-pace {
     color: var(--muted);
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(15, 23, 42, 0.05);
 }
 
 .card-stats {

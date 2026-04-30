@@ -8,21 +8,21 @@ function getDay() {
 var DATASET_STYLES = [
     {
         // actual
-        borderColor: "#6ee7f7",
-        backgroundColor: "rgba(110, 231, 247, 0.10)",
+        borderColor: "#0ea5e9",
+        backgroundColor: "rgba(14, 165, 233, 0.10)",
         borderWidth: 2.5,
         pointRadius: 0,
         pointHitRadius: 8,
         pointHoverRadius: 4,
-        pointHoverBackgroundColor: "#6ee7f7",
-        pointHoverBorderColor: "#0f0f1a",
+        pointHoverBackgroundColor: "#0ea5e9",
+        pointHoverBorderColor: "#ffffff",
         pointHoverBorderWidth: 2,
         fill: true,
         lineTension: 0.25
     },
     {
         // target
-        borderColor: "rgba(167, 139, 250, 0.55)",
+        borderColor: "rgba(139, 92, 246, 0.55)",
         backgroundColor: "transparent",
         borderWidth: 1.5,
         borderDash: [4, 4],
@@ -60,14 +60,14 @@ function getChart(index, data) {
             scaleID: "x-axis-0",
             value: getDay(),
             borderWidth: 1,
-            borderColor: "rgba(249, 168, 212, 0.5)",
+            borderColor: "rgba(236, 72, 153, 0.55)",
             borderDash: [3, 3],
             label: {
                 content: "TODAY",
                 enabled: true,
                 position: "top",
-                backgroundColor: "rgba(249, 168, 212, 0.92)",
-                fontColor: "#09090f",
+                backgroundColor: "rgba(236, 72, 153, 0.95)",
+                fontColor: "#ffffff",
                 fontSize: 9,
                 fontStyle: "bold",
                 xPadding: 6,
@@ -89,13 +89,13 @@ function getChart(index, data) {
             tooltips: {
                 mode: 'index',
                 intersect: false,
-                backgroundColor: 'rgba(15, 15, 26, 0.96)',
-                titleFontColor: '#e2e8f0',
+                backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                titleFontColor: '#0f172a',
                 titleFontSize: 11,
                 titleFontStyle: '600',
-                bodyFontColor: '#e2e8f0',
+                bodyFontColor: '#0f172a',
                 bodyFontSize: 11,
-                borderColor: 'rgba(110, 231, 247, 0.2)',
+                borderColor: 'rgba(15, 23, 42, 0.10)',
                 borderWidth: 1,
                 cornerRadius: 6,
                 xPadding: 10,
@@ -116,12 +116,12 @@ function getChart(index, data) {
             scales: {
                 xAxes: [{
                     gridLines: {
-                        color: 'rgba(255,255,255,0.04)',
-                        zeroLineColor: 'rgba(255,255,255,0.04)',
+                        color: 'rgba(15, 23, 42, 0.06)',
+                        zeroLineColor: 'rgba(15, 23, 42, 0.06)',
                         drawBorder: false
                     },
                     ticks: {
-                        fontColor: '#4a5568',
+                        fontColor: '#94a3b8',
                         fontSize: 10,
                         autoSkip: true,
                         maxTicksLimit: 7,
@@ -130,12 +130,12 @@ function getChart(index, data) {
                 }],
                 yAxes: [{
                     gridLines: {
-                        color: 'rgba(255,255,255,0.04)',
-                        zeroLineColor: 'rgba(255,255,255,0.04)',
+                        color: 'rgba(15, 23, 42, 0.06)',
+                        zeroLineColor: 'rgba(15, 23, 42, 0.06)',
                         drawBorder: false
                     },
                     ticks: {
-                        fontColor: '#4a5568',
+                        fontColor: '#94a3b8',
                         fontSize: 10,
                         beginAtZero: true,
                         precision: 0,
