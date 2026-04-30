@@ -1,10 +1,15 @@
 from flask import Flask
 from flask import render_template
+import csv
 import json
 import pickle
 import requests
 import datetime
 import os
+from pathlib import Path
+
+CACHE_FILE = "cache.csv"
+CACHE_TTL_HOURS = 12
 
 app = Flask(__name__)
 
@@ -53,21 +58,43 @@ def get_cards(list_id):
     # print(response.text)
     return json.loads(response.text)
 
+def read_cache(list_id):
+    if not Path(CACHE_FILE).exists():
+        return None
+    with open(CACHE_FILE, newline='') as f:
+        rows = [row for row in csv.DictReader(f) if row['list_id'] == list_id]
+    if not rows:
+        return None
+    cached_at = datetime.datetime.fromisoformat(rows[0]['cached_at'])
+    age = datetime.datetime.now(datetime.timezone.utc) - cached_at
+    if age.total_seconds() > CACHE_TTL_HOURS * 3600:
+        return None
+    return [row['dateLastActivity'] for row in rows]
+
+def write_cache(list_id, dates):
+    existing_rows = []
+    if Path(CACHE_FILE).exists():
+        with open(CACHE_FILE, newline='') as f:
+            existing_rows = [row for row in csv.DictReader(f) if row['list_id'] != list_id]
+    now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    new_rows = [{'list_id': list_id, 'dateLastActivity': d, 'cached_at': now} for d in dates]
+    with open(CACHE_FILE, 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=['list_id', 'dateLastActivity', 'cached_at'])
+        writer.writeheader()
+        writer.writerows(existing_rows + new_rows)
+
 def create_data(list_id):
-    cards = get_cards(list_id)
-    dates = []
-    for card in cards:
-        # print(card)
-        # break
-        dt = card["dateLastActivity"]
-        # dt = get_card_actions(card["id"])[0]["date"]
-        dates.append(datetime.datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S.%f%z").timetuple().tm_yday)
-    
+    dates = read_cache(list_id)
+    if dates is None:
+        cards = get_cards(list_id)
+        dates = [card["dateLastActivity"] for card in cards]
+        write_cache(list_id, dates)
+
+    day_nums = [datetime.datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S.%f%z").timetuple().tm_yday for dt in dates]
     a = [0 for i in range(366)]
-    for i in dates:
+    for i in day_nums:
         a[i] += 1
-    data = [sum(a[:i+1]) for i in range(366)]
-    return data
+    return [sum(a[:i+1]) for i in range(366)]
 
 def get_d(d):
     data = []
