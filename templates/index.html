@@ -29,14 +29,19 @@
             <a href="/" class="logo">my<span>progress</span></a>
             <span class="year-meta">day {{ progress_day }} · {{ year_pct }}% through {{ year }}</span>
         </div>
-        <nav>
-            <a href="/2021" {% if year == 2021 %}class="active"{% endif %}>2021</a>
-            <a href="/2023" {% if year == 2023 %}class="active"{% endif %}>2023</a>
-            <a href="/2024" {% if year == 2024 %}class="active"{% endif %}>2024</a>
-            <a href="/2025" {% if year == 2025 %}class="active"{% endif %}>2025</a>
-            <a href="/" {% if year == 2026 %}class="active"{% endif %}>2026</a>
-            <a href="/compare" {% if year == 'compare' %}class="active"{% endif %}>compare</a>
-        </nav>
+        <div class="header-actions">
+            <nav>
+                <a href="/2021" {% if year == 2021 %}class="active"{% endif %}>2021</a>
+                <a href="/2023" {% if year == 2023 %}class="active"{% endif %}>2023</a>
+                <a href="/2024" {% if year == 2024 %}class="active"{% endif %}>2024</a>
+                <a href="/2025" {% if year == 2025 %}class="active"{% endif %}>2025</a>
+                <a href="/" {% if year == 2026 %}class="active"{% endif %}>2026</a>
+                <a href="/compare" {% if year == 'compare' %}class="active"{% endif %}>compare</a>
+            </nav>
+            <form method="post" action="/refresh">
+                <button type="submit" class="refresh-btn" title="Refresh from Trello">↻</button>
+            </form>
+        </div>
     </header>
 
     <main>

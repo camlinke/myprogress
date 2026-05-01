@@ -1,5 +1,4 @@
-from flask import Flask
-from flask import render_template
+from flask import Flask, render_template, redirect, request
 import csv
 import json
 import pickle
@@ -581,6 +580,14 @@ def compare():
         year_colors=YEAR_COLORS,
         year='compare',
     )
+
+@app.route('/refresh', methods=['POST'])
+def refresh():
+    try:
+        Path(CACHE_FILE).unlink(missing_ok=True)
+    except OSError as e:
+        app.logger.warning("failed to clear cache: %s", e)
+    return redirect(request.referrer or '/')
 
 if __name__ == '__main__':
     app.run(debug=True)

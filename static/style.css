@@ -74,6 +74,12 @@ header {
     font-variant-numeric: tabular-nums;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 nav {
     display: flex;
     gap: 0.2rem;
@@ -99,6 +105,35 @@ nav a.active {
     color: var(--text);
     background: rgba(15, 23, 42, 0.08);
     font-weight: 700;
+}
+
+.refresh-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+    font-family: inherit;
+    transition: color 0.15s, border-color 0.15s, transform 0.35s ease;
+}
+
+.refresh-btn:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
+    transform: rotate(180deg);
+}
+
+.refresh-btn:active {
+    transform: rotate(360deg);
+    transition-duration: 0.15s;
 }
 
 /* ── Compare toggles ─────────────────────────────── */
