@@ -558,7 +558,7 @@ def home():
 
 @app.route('/compare')
 def compare():
-    available_years = sorted(YEARS.keys())
+    available_years = sorted(y for y in YEARS.keys() if y != 2021)
     cards = []
     for category in COMPARE_CATEGORIES:
         datasets = []
