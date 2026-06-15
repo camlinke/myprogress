@@ -415,7 +415,7 @@ def twentyfour():
             },
             {
                 "name": "Papers",
-                "id": "6768c05183f146b395a76559",
+                "id": "6580d1360485c451ef012c65",
                 "target": 70,
             },
             {
